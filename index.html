@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>한국 수영장 지도</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
@@ -204,6 +205,7 @@ html{height:100%}
 .pool-card-info{font-size:12px;color:var(--text-sub);line-height:1.5}
 .pool-card-price{font-size:13px;font-weight:700;color:var(--primary);margin-top:4px;font-variant-numeric:tabular-nums}
 .pool-card-closed{font-size:11px;font-weight:600;color:#dc2626;background:rgba(220,38,38,.09);border:1px solid rgba(220,38,38,.25);border-radius:4px;padding:2px 7px;display:inline-block;margin-top:4px}
+.pool-card-unknown{font-size:11px;font-weight:500;color:var(--text-sub);background:var(--surface);border:1px dashed var(--border);border-radius:4px;padding:2px 7px;display:inline-block;margin-top:4px}
 .pool-card-holiday-open{font-size:11px;font-weight:600;color:var(--success);background:rgba(5,150,105,.08);border:1px solid rgba(5,150,105,.2);border-radius:4px;padding:2px 7px;display:inline-block;margin-top:4px}
 .holiday-banner{display:none;align-items:center;gap:8px;background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.3);border-radius:var(--r);padding:8px 12px;font-size:12px;font-weight:500;color:#dc2626;position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:1000;white-space:nowrap;max-width:90%;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .holiday-banner.show{display:flex}
@@ -231,6 +233,7 @@ html{height:100%}
 .pp-notice{font-size:11px;color:var(--warn);margin-top:8px;padding:6px 8px;background:rgba(217,119,6,.08);border-radius:6px;line-height:1.3}
 .pp-updated{font-size:10px;color:var(--text-sub);margin-top:6px;text-align:right}
 .pp-holiday-closed{font-size:12px;font-weight:600;color:#fff;background:#dc2626;padding:5px 8px;border-radius:6px;margin-top:8px;display:flex;align-items:center;gap:5px}
+.pp-unknown{font-size:11px;color:var(--text-sub);background:var(--input-bg);padding:5px 8px;border-radius:6px;margin-top:6px}
 .pp-holiday-open{font-size:11px;color:var(--success);background:rgba(5,150,105,.08);padding:5px 8px;border-radius:6px;margin-top:8px}
 
 /* Custom marker */
@@ -254,12 +257,13 @@ html{height:100%}
   position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;
   display:flex;align-items:center;justify-content:center;padding:16px;
 }
+.modal-overlay[hidden]{display:none}
 .modal-box{
   background:var(--surface);border-radius:14px;max-width:440px;width:100%;
   box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden;
 }
 .modal-header{padding:20px 24px 0;font-size:17px;font-weight:700}
-.modal-body{padding:16px 24px}
+.modal-body{padding:16px 24px;max-height:70vh;overflow-y:auto}
 .modal-body p{font-size:13px;color:var(--text-sub);margin:4px 0;line-height:1.5}
 .modal-body .info-val{font-weight:700;color:var(--text)}
 .progress-track{width:100%;height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:12px 0}
@@ -270,6 +274,16 @@ html{height:100%}
 .fetch-log li.done::before{background:var(--success)}
 .fetch-log li.loading::before{background:var(--warn);animation:pulse .8s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.m-h{font-size:13px;font-weight:700;color:var(--text);margin:12px 0 4px}
+.m-criteria{margin:0;padding-left:18px;font-size:12px;color:var(--text-sub);line-height:1.6}
+.m-warn{font-size:12px;color:#dc2626;background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.25);border-radius:6px;padding:8px 10px;line-height:1.5}
+.m-table{width:100%;border-collapse:collapse;font-size:11px;margin:6px 0;font-variant-numeric:tabular-nums}
+.m-table th,.m-table td{border-bottom:1px solid var(--border);padding:4px 6px;text-align:left;color:var(--text-sub)}
+.m-table th{font-weight:500}
+.m-table td:first-child{color:var(--text);font-weight:500}
+.m-cities{font-size:11px!important}
+.m-hint{font-size:11px!important;word-break:break-all}
+.m-hint code{background:var(--input-bg);padding:1px 4px;border-radius:4px;font-size:10px}
 .fetch-done{font-size:14px;font-weight:700;color:var(--success);margin-top:12px}
 .modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:12px 24px 20px}
 .btn{padding:10px 20px;border:none;border-radius:var(--r);font:500 14px/1 var(--f);cursor:pointer;transition:all .15s}
@@ -382,19 +396,24 @@ html{height:100%}
 
 <div class="modal-overlay" id="fetchModal" hidden>
   <div class="modal-box">
-    <div class="modal-header">최신 수영장 정보 가져오기</div>
+    <div class="modal-header">데이터 조회 담당자 — 전국 수영장</div>
     <div class="modal-body">
-      <p>현재 날짜: <span class="info-val" id="mDate"></span></p>
-      <p>데이터 보관 기간: <span class="info-val" id="mRange"></span></p>
-      <div id="mProgress" hidden>
-        <div class="progress-track"><div class="progress-fill" id="mBar"></div></div>
-        <ul class="fetch-log" id="mLog"></ul>
-      </div>
+      <div class="m-warn" id="mWarn" hidden></div>
+      <h3 class="m-h">조회 조건</h3>
+      <ol class="m-criteria" id="mCriteria"></ol>
+      <h3 class="m-h">저장 데이터 현황</h3>
+      <p>수집 시각: <span class="info-val" id="mCollected">-</span></p>
+      <p>조회 가능 기간: <span class="info-val" id="mRange">-</span></p>
+      <p>저장 수영장: <span class="info-val" id="mCounts">-</span></p>
+      <table class="m-table"><thead><tr><th>소스</th><th>원본</th><th>저장</th><th>제외(상태/유형/어린이/중복)</th></tr></thead><tbody id="mSources"></tbody></table>
+      <p class="m-cities" id="mCities"></p>
+      <p class="m-hint">전국 갱신: <code>python3 scripts/collect_pools.py --localdata 수영장업.csv --public 공공체육시설.csv</code></p>
+      <ul class="fetch-log" id="mLog"></ul>
       <div class="fetch-done" id="mDone" hidden></div>
     </div>
     <div class="modal-footer">
       <button class="btn secondary" id="mClose">닫기</button>
-      <button class="btn primary" id="mStart">가져오기 시작</button>
+      <button class="btn primary" id="mStart">저장 데이터 다시 불러오기</button>
     </div>
   </div>
 </div>
@@ -407,97 +426,26 @@ html{height:100%}
 /* ── Pool data ── */
 var ALL_DAYS = ['월','화','수','목','금','토','일'];
 
-/* regularOff: 정기 휴관 요일(보통 월요일), holidayClosed: 공휴일 휴관 여부 */
-var pools = [
-  {id:1,name:"종로구민체육센터 수영장",city:"서울특별시",district:"종로구",lat:37.5735,lng:126.9790,address:"서울 종로구 율곡로 197",
-   prices:{member:4000,nonMember:6000},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금','토']},{s:20,e:21,d:['월','수','금']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:2,name:"강남스포츠문화센터 수영장",city:"서울특별시",district:"강남구",lat:37.5172,lng:127.0473,address:"서울 강남구 삼성로 511",
-   prices:{member:5000,nonMember:8000},sessions:[{s:6,e:8,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금']},{s:19,e:21,d:['월','화','수','목','금']},{s:9,e:11,d:['토']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:3,name:"마포구민체육센터 수영장",city:"서울특별시",district:"마포구",lat:37.5536,lng:126.9232,address:"서울 마포구 성미산로 189",
-   prices:{member:3500,nonMember:5500},sessions:[{s:6,e:7,d:['월','수','금']},{s:10,e:11,d:['화','목']},{s:12,e:13,d:['월','화','수','목','금','토']},{s:20,e:21,d:['월','수','금']}],
-   regularOff:'화',holidayClosed:true,notices:"10/15 시설점검 휴관"},
-  {id:4,name:"송파구민체육센터 수영장",city:"서울특별시",district:"송파구",lat:37.5145,lng:127.1060,address:"서울 송파구 올림픽로 326",
-   prices:{member:4500,nonMember:7000},sessions:[{s:6,e:8,d:ALL_DAYS},{s:12,e:13,d:['월','화','수','목','금']},{s:21,e:22,d:ALL_DAYS}],
-   regularOff:'월',holidayClosed:false,notices:"10월 정상운영 (공휴일 운영)"},
-  {id:5,name:"서초구민체육센터 수영장",city:"서울특별시",district:"서초구",lat:37.4837,lng:127.0324,address:"서울 서초구 서초대로 246",
-   prices:{member:4000,nonMember:6500},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:9,e:10,d:['월','수','금']},{s:14,e:15,d:['화','목']},{s:20,e:21,d:['월','화','수','목','금']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:6,name:"영등포구민체육센터 수영장",city:"서울특별시",district:"영등포구",lat:37.5263,lng:126.8963,address:"서울 영등포구 국회대로 684",
-   prices:{member:3000,nonMember:5000},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금']},{s:19,e:20,d:['월','수','금']},{s:9,e:10,d:['토']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:7,name:"성북구민체육센터 수영장",city:"서울특별시",district:"성북구",lat:37.5894,lng:127.0167,address:"서울 성북구 화랑로 208",
-   prices:{member:3500,nonMember:5500},sessions:[{s:6,e:7,d:['화','목']},{s:12,e:13,d:['월','화','수','목','금']},{s:20,e:21,d:['월','수','금']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:8,name:"관악구민체육센터 수영장",city:"서울특별시",district:"관악구",lat:37.4784,lng:126.9516,address:"서울 관악구 관악로 257",
-   prices:{member:3000,nonMember:5000},sessions:[{s:6,e:7,d:['월','화','수','목','금','토']},{s:12,e:13,d:['월','수','금']},{s:14,e:15,d:['화','목']},{s:20,e:21,d:['월','화','수','목','금']}],
-   regularOff:'일',holidayClosed:true,notices:"10월 정상운영"},
-  {id:9,name:"중구국민체육센터 수영장",city:"서울특별시",district:"중구",lat:37.5636,lng:126.9975,address:"서울 중구 을지로 182",
-   prices:{member:4500,nonMember:7000},sessions:[{s:6,e:8,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금']},{s:19,e:21,d:['화','목']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:10,name:"용산구민체육센터 수영장",city:"서울특별시",district:"용산구",lat:37.5321,lng:126.9700,address:"서울 용산구 녹사평대로 150",
-   prices:{member:4000,nonMember:6000},sessions:[{s:6,e:7,d:['월','수','금']},{s:10,e:11,d:['화','목']},{s:12,e:13,d:['월','화','수','목','금']},{s:20,e:21,d:['월','화','수','목','금']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:11,name:"광진구민체육센터 수영장",city:"서울특별시",district:"광진구",lat:37.5481,lng:127.0857,address:"서울 광진구 아차산로 375",
-   prices:{member:3500,nonMember:5500},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:12,e:13,d:['화','목']},{s:20,e:22,d:['월','수','금']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:12,name:"노원구민체육센터 수영장",city:"서울특별시",district:"노원구",lat:37.6543,lng:127.0568,address:"서울 노원구 동일로 1354",
-   prices:{member:3000,nonMember:4500},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금']},{s:19,e:20,d:['월','수','금']},{s:9,e:11,d:['토']}],
-   regularOff:'화',holidayClosed:true,notices:"10월 정상운영"},
-  {id:13,name:"동대문구민체육센터 수영장",city:"서울특별시",district:"동대문구",lat:37.5744,lng:127.0396,address:"서울 동대문구 천호대로 323",
-   prices:{member:3500,nonMember:5000},sessions:[{s:6,e:7,d:['월','수','금']},{s:12,e:13,d:['월','화','수','목','금']},{s:20,e:21,d:['화','목']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:14,name:"양천구민체육센터 수영장",city:"서울특별시",district:"양천구",lat:37.5270,lng:126.8561,address:"서울 양천구 목동로 105",
-   prices:{member:4000,nonMember:6000},sessions:[{s:6,e:8,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금','토']},{s:19,e:21,d:['월','화','수','목','금']},{s:10,e:12,d:['토','일']}],
-   regularOff:'월',holidayClosed:false,notices:"10월 정상운영 (공휴일 운영)"},
-  {id:15,name:"해운대구민체육센터 수영장",city:"부산광역시",district:"해운대구",lat:35.1631,lng:129.1635,address:"부산 해운대구 해운대로 570",
-   prices:{member:4000,nonMember:6000},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금']},{s:20,e:21,d:['월','수','금']},{s:9,e:11,d:['토']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:16,name:"수영구민체육센터 수영장",city:"부산광역시",district:"수영구",lat:35.1454,lng:129.1132,address:"부산 수영구 수영로 510",
-   prices:{member:3500,nonMember:5500},sessions:[{s:6,e:7,d:['월','화','수','목','금','토']},{s:12,e:13,d:['월','수','금']},{s:19,e:21,d:['화','목']}],
-   regularOff:'일',holidayClosed:true,notices:"10월 정상운영"},
-  {id:17,name:"부산진구민체육센터 수영장",city:"부산광역시",district:"부산진구",lat:35.1629,lng:129.0531,address:"부산 부산진구 중앙대로 657",
-   prices:{member:3000,nonMember:5000},sessions:[{s:6,e:8,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금']},{s:19,e:21,d:['월','수','금']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:18,name:"남동구민체육센터 수영장",city:"인천광역시",district:"남동구",lat:37.4488,lng:126.7312,address:"인천 남동구 남동대로 802",
-   prices:{member:3500,nonMember:5500},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금']},{s:20,e:21,d:['월','수','금']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:19,name:"연수구민체육센터 수영장",city:"인천광역시",district:"연수구",lat:37.4107,lng:126.6783,address:"인천 연수구 컨벤시아대로 115",
-   prices:{member:4000,nonMember:6000},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:10,e:11,d:['화','목']},{s:12,e:13,d:['월','수','금']},{s:20,e:21,d:['월','화','수','목','금']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:20,name:"대전서구국민체육센터 수영장",city:"대전광역시",district:"서구",lat:36.3465,lng:127.3863,address:"대전 서구 둔산대로 155",
-   prices:{member:3000,nonMember:5000},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:12,e:13,d:['월','수','금']},{s:19,e:20,d:['화','목']},{s:9,e:11,d:['토']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:21,name:"수성구민체육센터 수영장",city:"대구광역시",district:"수성구",lat:35.8584,lng:128.6317,address:"대구 수성구 달구벌대로 2500",
-   prices:{member:3500,nonMember:5500},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금']},{s:20,e:21,d:['월','수','금']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:22,name:"광주서구국민체육센터 수영장",city:"광주광역시",district:"서구",lat:35.1523,lng:126.8907,address:"광주 서구 상무대로 890",
-   prices:{member:3000,nonMember:4500},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금','토']},{s:19,e:20,d:['월','수','금']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:23,name:"울산남구국민체육센터 수영장",city:"울산광역시",district:"남구",lat:35.5384,lng:129.3114,address:"울산 남구 삼산로 277",
-   prices:{member:3500,nonMember:5000},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:12,e:13,d:['월','수','금']},{s:19,e:20,d:['화','목']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:24,name:"세종시민체육센터 수영장",city:"세종특별자치시",district:"세종시",lat:36.4800,lng:127.2612,address:"세종 도움5로 97",
-   prices:{member:3000,nonMember:5000},sessions:[{s:6,e:7,d:['월','화','수','목','금']},{s:12,e:13,d:['월','화','수','목','금']},{s:20,e:21,d:['월','수','금']},{s:10,e:12,d:['토']}],
-   regularOff:'월',holidayClosed:true,notices:"10월 정상운영"},
-  {id:25,name:"제주시민체육센터 수영장",city:"제주특별자치도",district:"제주시",lat:33.4996,lng:126.5312,address:"제주 제주시 연삼로 473",
-   prices:{member:3500,nonMember:5500},sessions:[{s:6,e:7,d:['월','화','수','목','금','토']},{s:12,e:13,d:['월','화','수','목','금']},{s:19,e:20,d:['월','수','금']},{s:10,e:12,d:['일']}],
-   regularOff:'화',holidayClosed:true,notices:"10월 정상운영"}
-];
+/* 수영장 데이터는 data/pools.json (scripts/collect_pools.py 가 생성) 에서 로드 */
+var pools = [];
+var dataMeta = null;
+var regions = {};
 
-/* ── Region data ── */
-var regions = {
-  "서울특별시":["종로구","중구","용산구","성동구","광진구","동대문구","중랑구","성북구","강북구","도봉구","노원구","은평구","서대문구","마포구","양천구","강서구","구로구","금천구","영등포구","동작구","관악구","서초구","강남구","송파구","강동구"],
-  "부산광역시":["중구","서구","동구","영도구","부산진구","동래구","남구","북구","해운대구","사하구","금정구","강서구","연제구","수영구","사상구","기장군"],
-  "인천광역시":["중구","동구","미추홀구","연수구","남동구","부평구","계양구","서구","강화군","옹진군"],
-  "대전광역시":["동구","중구","서구","유성구","대덕구"],
-  "대구광역시":["중구","동구","서구","남구","북구","수성구","달서구","달성군"],
-  "광주광역시":["동구","서구","남구","북구","광산구"],
-  "울산광역시":["중구","남구","동구","북구","울주군"],
-  "세종특별자치시":["세종시"],
-  "제주특별자치도":["제주시","서귀포시"]
-};
+function buildRegions(){
+  regions = {};
+  pools.forEach(function(p){
+    if(!p.city || !p.district) return;
+    (regions[p.city] = regions[p.city] || []);
+    if(regions[p.city].indexOf(p.district) < 0) regions[p.city].push(p.district);
+  });
+  Object.keys(regions).forEach(function(c){ regions[c].sort(); });
+}
+
+function esc(v){
+  return String(v==null?'':v).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
 
 var cityCoords = {
   "서울특별시":{lat:37.5665,lng:126.978,z:12},
@@ -706,33 +654,55 @@ function daysLabel(days){
   return days.join(', ');
 }
 
+function priceItems(pool){
+  if(!pool.prices) return [];
+  var items=[];
+  if(state.showNonMember || !state.showMember) items.push(['비회원',pool.prices.nonMember,'nm']);
+  if(state.showMember) items.push(['회원',pool.prices.member,'m']);
+  return items;
+}
+
 function popupHtml(pool){
   var h='<div style="min-width:200px">';
-  h+='<div class="pp-name">'+pool.name+'</div>';
-  h+='<div class="pp-addr">'+pool.address+'</div>';
+  h+='<div class="pp-name">'+esc(pool.name)+'</div>';
+  h+='<div class="pp-addr">'+esc(pool.address)+'</div>';
+  if(pool.phone) h+='<div class="pp-addr">☎ '+esc(pool.phone)+'</div>';
   h+='<hr class="pp-divider">';
-  h+='<div class="pp-prices">';
-  if(state.showNonMember) h+='<div class="pp-price nm"><span class="pp-label">비회원</span>'+formatPrice(pool.prices.nonMember)+'</div>';
-  if(state.showMember) h+='<div class="pp-price m"><span class="pp-label">회원</span>'+formatPrice(pool.prices.member)+'</div>';
-  if(!state.showNonMember && !state.showMember) h+='<div class="pp-price nm"><span class="pp-label">비회원</span>'+formatPrice(pool.prices.nonMember)+'</div>';
-  h+='</div>';
-  h+='<hr class="pp-divider">';
+  var items=priceItems(pool);
+  if(items.length){
+    h+='<div class="pp-prices">';
+    items.forEach(function(it){h+='<div class="pp-price '+it[2]+'"><span class="pp-label">'+it[0]+'</span>'+formatPrice(it[1])+'</div>';});
+    h+='</div><hr class="pp-divider">';
+  }
   h+='<span class="pp-label">자유수영 시간</span>';
-  h+='<ul class="pp-schedule">';
-  pool.sessions.forEach(function(sess){
-    h+='<li><span class="days">'+daysLabel(sess.d)+'</span><span class="time">'+formatTime(sess.s)+' - '+formatTime(sess.e)+'</span></li>';
-  });
-  h+='</ul>';
-  var todayStatus=isTodayClosed(pool);
-  if(todayStatus.closed){
-    h+='<div class="pp-holiday-closed">🚫 오늘 휴관 · '+todayStatus.reason+'</div>';
+  if(pool.sessions.length){
+    h+='<ul class="pp-schedule">';
+    pool.sessions.forEach(function(sess){
+      h+='<li><span class="days">'+daysLabel(sess.d)+'</span><span class="time">'+formatTime(sess.s)+' - '+formatTime(sess.e)+'</span></li>';
+    });
+    h+='</ul>';
+  } else {
+    h+='<div class="pp-unknown">자유수영 시간·가격 미수집 — 시설에 문의하세요</div>';
+  }
+  var st=isTodayClosed(pool);
+  if(st.closed){
+    h+='<div class="pp-holiday-closed">🚫 휴관 · '+st.reason+'</div>';
+  } else if(st.unknown){
+    h+='<div class="pp-unknown">'+st.reason+'</div>';
   } else if(pool.holidayClosed===false){
     h+='<div class="pp-holiday-open">✅ 공휴일에도 운영합니다</div>';
   }
-  if(pool.notices){h+='<div class="pp-notice">'+pool.notices+'</div>';}
-  h+='<div class="pp-updated">업데이트: '+todayStr()+'</div>';
+  if(pool.notices){h+='<div class="pp-notice">'+esc(pool.notices)+'</div>';}
+  var src={localdata:'LOCALDATA 수영장업',public:'전국 공공체육시설',manual:'수동 입력'}[pool.source]||'';
+  h+='<div class="pp-updated">'+src+(pool.verified?' · 확인됨':' · 미검증')+' · 수집 '+collectedLabel()+'</div>';
   h+='</div>';
   return h;
+}
+
+function collectedLabel(){
+  if(!dataMeta) return '-';
+  var d=new Date(dataMeta.collectedAt);
+  return d.getFullYear()+'.'+(d.getMonth()+1)+'.'+d.getDate();
 }
 
 function todayStr(){var d=new Date();return d.getFullYear()+'.'+(d.getMonth()+1)+'.'+d.getDate();}
@@ -756,10 +726,6 @@ function getKoreanHoliday(date){
   return null;
 }
 
-function getRegularOffDayName(pool){
-  return pool.regularOff || null;
-}
-
 function isRegularOff(pool, date){
   if(!pool.regularOff) return false;
   return pool.regularOff===KOR_DAYS[date.getDay()];
@@ -770,6 +736,9 @@ function isTodayClosed(pool){
   var holiday=getKoreanHoliday(d);
   if(holiday && pool.holidayClosed) return {closed:true, reason:'공휴일 ('+holiday+')'};
   if(isRegularOff(pool,d)) return {closed:true, reason:'정기 휴관 ('+pool.regularOff+'요일)'};
+  if(pool.holidayClosed==null && (holiday || !pool.regularOff)){
+    return {closed:false, unknown:true, reason:holiday?'공휴일 운영여부 미확인':'휴관일 정보 미확인'};
+  }
   return {closed:false, reason:null};
 }
 
@@ -778,18 +747,17 @@ function updateHolidayBanner(){
   var holiday=getKoreanHoliday(d);
   var banner=document.getElementById('holidayBanner');
   if(holiday){
-    var closedCount=pools.filter(function(p){return isTodayClosed(p).closed;}).length;
+    var closedCount=0, unknownCount=0;
+    pools.forEach(function(p){var st=isTodayClosed(p); if(st.closed) closedCount++; else if(st.unknown) unknownCount++;});
     var isToday=(d.toDateString()===new Date().toDateString());
     var prefix=isToday?'오늘은':'선택일('+formatDateLabel(d)+')은';
-    banner.innerHTML='⚠ '+prefix+' <strong>'+holiday+'</strong>입니다 · '+closedCount+'개 수영장 휴관';
+    banner.innerHTML='⚠ '+prefix+' <strong>'+holiday+'</strong>입니다 · '+closedCount+'개 휴관'+(unknownCount?' · '+unknownCount+'개 운영여부 미확인':'');
     banner.classList.add('show');
   } else {
     banner.innerHTML='';
     banner.classList.remove('show');
   }
 }
-
-function initHolidayBanner(){updateHolidayBanner();}
 
 function formatDateLabel(d){
   return (d.getMonth()+1)+'/'+d.getDate();
@@ -802,16 +770,12 @@ function initDateSelect(){
   today.setHours(0,0,0,0);
   var y=today.getFullYear(), m=today.getMonth();
 
-  // 이번달 말일
-  var lastDayCur=new Date(y,m+1,0).getDate();
-  // 다음달 데이터 존재 여부 확인 (notices에 다음달 날짜 언급 있으면 확장)
-  var nextM=m+1, nextY=y;
-  if(nextM>11){nextM=0;nextY++;}
-  var hasNextMonth=pools.some(function(p){
-    return p.notices && p.notices.indexOf((nextM+1)+'월')>=0;
-  });
-  var lastDate=new Date(y,m+1,0); // 이번달 말
-  if(hasNextMonth) lastDate=new Date(nextY,nextM+1,0); // 다음달 말
+  // 조회 기간은 수집기가 저장한 coverageUntil(당월 말일, 다음달 정보 확보 시 다음달 말일)
+  var lastDate=new Date(y,m+1,0);
+  if(dataMeta && dataMeta.coverageUntil){
+    var cu=parseDateVal(dataMeta.coverageUntil);
+    if(cu>lastDate) lastDate=cu;
+  }
 
   var cur=new Date(today);
   while(cur<=lastDate){
@@ -885,9 +849,9 @@ function applyFilters(){
   renderPoolList(matched);
   var d=state.queryDate, isToday=(d.toDateString()===new Date().toDateString());
   var dateLabel=isToday?'오늘':formatDateLabel(d);
-  var openCount=matched.filter(function(p){return !isTodayClosed(p).closed;}).length;
-  var closedCount=matched.length-openCount;
-  var countHtml='<strong>'+matched.length+'</strong>개 ('+dateLabel+': 운영 '+openCount+'·휴관 '+closedCount+')';
+  var openCount=0, unknownCount=0, closedCount=0;
+  matched.forEach(function(p){var st=isTodayClosed(p); if(st.closed) closedCount++; else if(st.unknown) unknownCount++; else openCount++;});
+  var countHtml='<strong>'+matched.length+'</strong>개 ('+dateLabel+': 운영 '+openCount+(unknownCount?'·미확인 '+unknownCount:'')+'·휴관 '+closedCount+')';
   document.getElementById('resultCount').innerHTML='검색 결과: '+countHtml;
 }
 
@@ -897,7 +861,7 @@ function renderMarkers(list){
   activeMarker=null;
   list.forEach(function(pool){
     var m=L.marker([pool.lat,pool.lng],{icon:createMarkerIcon(false)});
-    m.bindPopup(popupHtml(pool),{maxWidth:280,className:''});
+    m.bindPopup(function(){return popupHtml(pool);},{maxWidth:280,className:''});
     m.on('click',function(){highlightPool(pool.id);});
     m.addTo(map);
     markers[pool.id]=m;
@@ -914,8 +878,15 @@ function highlightPool(id){
     markers[id].openPopup();
   }
   document.querySelectorAll('.pool-card').forEach(function(c){
-    c.classList.toggle('active',c.dataset.id==id);
+    c.classList.toggle('active',c.dataset.id===String(id));
   });
+}
+
+var LIST_LIMIT=300;
+
+function statusRank(pool){
+  var st=isTodayClosed(pool);
+  return st.closed?2:(st.unknown?1:0);
 }
 
 function renderPoolList(list){
@@ -924,36 +895,36 @@ function renderPoolList(list){
     el.innerHTML='<div class="no-results">검색 조건에 맞는 수영장이 없습니다.<br>필터를 조정해 보세요.</div>';
     return;
   }
-  // 이용 가능(열린) 수영장 먼저, 휴관 수영장 뒤로
+  // 운영 확인 → 운영여부 미확인 → 휴관 순
   var sorted=list.slice().sort(function(a,b){
-    var ac=isTodayClosed(a).closed?1:0;
-    var bc=isTodayClosed(b).closed?1:0;
-    return ac-bc;
+    return statusRank(a)-statusRank(b) || a.name.localeCompare(b.name,'ko');
   });
-  el.innerHTML=sorted.map(function(pool){
-    var priceText='';
-    if(state.showNonMember) priceText+='비회원 '+formatPrice(pool.prices.nonMember);
-    if(state.showMember){if(priceText) priceText+=' / '; priceText+='회원 '+formatPrice(pool.prices.member);}
-    if(!priceText) priceText='비회원 '+formatPrice(pool.prices.nonMember);
-    var schedSummary=pool.sessions.map(function(s){return formatTime(s.s)+'-'+formatTime(s.e);}).join(', ');
-    var todayStatus=isTodayClosed(pool);
-    var closedBadge='';
-    if(todayStatus.closed){
-      closedBadge='<span class="pool-card-closed">오늘 휴관 · '+todayStatus.reason+'</span>';
-    } else if(pool.holidayClosed===false){
-      closedBadge='<span class="pool-card-holiday-open">공휴일 운영</span>';
-    }
-    return '<div class="pool-card" data-id="'+pool.id+'">'
-      +'<div class="pool-card-name">'+pool.name+'</div>'
-      +'<div class="pool-card-info">'+pool.district+' · '+schedSummary+'</div>'
-      +'<div class="pool-card-price">'+priceText+'</div>'
-      +closedBadge
+  var shown=sorted.slice(0,LIST_LIMIT);
+  var html=shown.map(function(pool){
+    var priceText=priceItems(pool).map(function(it){return it[0]+' '+formatPrice(it[1]);}).join(' / ');
+    var schedSummary=pool.sessions.length
+      ? pool.sessions.map(function(s){return formatTime(s.s)+'-'+formatTime(s.e);}).join(', ')
+      : '자유수영 시간 미수집';
+    var st=isTodayClosed(pool);
+    var badge='';
+    if(st.closed) badge='<span class="pool-card-closed">휴관 · '+st.reason+'</span>';
+    else if(st.unknown) badge='<span class="pool-card-unknown">'+st.reason+'</span>';
+    else if(pool.holidayClosed===false) badge='<span class="pool-card-holiday-open">공휴일 운영</span>';
+    return '<div class="pool-card" data-id="'+esc(pool.id)+'">'
+      +'<div class="pool-card-name">'+esc(pool.name)+'</div>'
+      +'<div class="pool-card-info">'+esc(pool.city.replace(/(특별자치|특별|광역)?(시|도)$/,''))+' '+esc(pool.district)+' · '+schedSummary+'</div>'
+      +(priceText?'<div class="pool-card-price">'+priceText+'</div>':'')
+      +badge
       +'</div>';
   }).join('');
+  if(sorted.length>LIST_LIMIT){
+    html+='<div class="no-results">상위 '+LIST_LIMIT+'개만 표시 중 · 지역을 선택해 범위를 좁혀 보세요.</div>';
+  }
+  el.innerHTML=html;
 
   el.querySelectorAll('.pool-card').forEach(function(card){
     card.addEventListener('click',function(){
-      var id=parseInt(card.dataset.id);
+      var id=card.dataset.id;
       var pool=pools.find(function(p){return p.id===id;});
       if(pool && markers[id]){
         map.setView([pool.lat,pool.lng],15,{animate:true});
@@ -966,7 +937,7 @@ function renderPoolList(list){
 /* ── Init selects ── */
 function initCitySelect(){
   var sel=document.getElementById('citySelect');
-  Object.keys(regions).forEach(function(city){
+  Object.keys(regions).sort(function(a,b){return a.localeCompare(b,'ko');}).forEach(function(city){
     var o=document.createElement('option');o.value=city;o.textContent=city;sel.appendChild(o);
   });
 }
@@ -1069,19 +1040,72 @@ document.getElementById('filterToggle').addEventListener('click',function(){
   this.textContent=document.getElementById('sidebar').classList.contains('open')?'닫기':'필터';
 });
 
-/* ── Fetch modal ── */
+/* ── Data load ── */
+var DATA_URL='data/pools.json';
+var SOURCE_LABEL={localdata:'LOCALDATA 수영장업',public:'전국 공공체육시설',manual:'수동 입력'};
+
+function loadData(){
+  return fetch(DATA_URL,{cache:'no-store'}).then(function(r){
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  });
+}
+
+function applyData(data){
+  dataMeta=data.meta;
+  pools=data.pools.filter(function(p){return p.lat!=null && p.lng!=null;});
+  buildRegions();
+  var citySel=document.getElementById('citySelect');
+  citySel.innerHTML='<option value="전체">전체 (시/도)</option>';
+  initCitySelect();
+  if(regions[state.city]) citySel.value=state.city; else state.city='전체';
+  var keepDistrict=state.district;
+  updateDistrictSelect();
+  if(regions[state.city] && regions[state.city].indexOf(keepDistrict)>=0){
+    state.district=keepDistrict;
+    document.getElementById('districtSelect').value=keepDistrict;
+  }
+  var dateSel=document.getElementById('dateSelect');
+  var keepDate=dateSel.value;
+  dateSel.innerHTML='';
+  initDateSelect();
+  if(keepDate && dateSel.querySelector('option[value="'+keepDate+'"]')) dateSel.value=keepDate;
+  state.queryDate=parseDateVal(dateSel.value);
+  updateHolidayBanner();
+  applyFilters();
+}
+
+/* ── Data collector modal ── */
 var fetchModal=document.getElementById('fetchModal');
+
+function renderDataStatus(){
+  var m=dataMeta;
+  if(!m) return;
+  document.getElementById('mCriteria').innerHTML=m.criteria.map(function(c){return '<li>'+esc(c)+'</li>';}).join('');
+  var dt=new Date(m.collectedAt);
+  document.getElementById('mCollected').textContent=dt.getFullYear()+'년 '+(dt.getMonth()+1)+'월 '+dt.getDate()+'일 '+pad(dt.getHours())+':'+pad(dt.getMinutes());
+  document.getElementById('mRange').textContent=m.coverageFrom+' ~ '+m.coverageUntil;
+  var c=m.counts;
+  document.getElementById('mCounts').textContent=c.total+'개 (지도표시 '+c.withCoords+' · 좌표없음 '+c.noCoords+' · 자유수영정보 '+c.withSchedule+' · 검증 '+c.verified+')';
+  document.getElementById('mSources').innerHTML=m.sources.map(function(src){
+    var ex=src.excluded;
+    var exText=ex?[ex.status,ex.type,ex.child_only,ex.duplicate||0].join(' / '):(src.matched!=null?'전국 데이터와 매칭 '+src.matched:'-');
+    return '<tr><td>'+esc(SOURCE_LABEL[src.name]||src.name)+'</td><td>'+src.rows+'</td><td>'+src.kept+'</td><td>'+exText+'</td></tr>';
+  }).join('');
+  document.getElementById('mCities').textContent='시/도별: '+Object.keys(c.byCity).map(function(k){return k+' '+c.byCity[k];}).join(', ');
+  var warn=document.getElementById('mWarn');
+  var problems=[];
+  if(!m.nationwide) problems.push('전국 수집이 아직 실행되지 않았습니다. 현재는 수동 입력 '+c.total+'개만 저장되어 있습니다.');
+  if(c.verified<c.total) problems.push((c.total-c.verified)+'개 시설의 자유수영 시간·가격·휴관 정보가 미검증 상태입니다.');
+  warn.innerHTML=problems.map(esc).join('<br>');
+  warn.hidden=!problems.length;
+}
+
 document.getElementById('refreshBtn').addEventListener('click',function(){
-  var now=new Date();
-  var y=now.getFullYear(),m=now.getMonth(),d=now.getDate();
-  document.getElementById('mDate').textContent=y+'년 '+(m+1)+'월 '+d+'일';
-  var nextFirst=new Date(y,m+1,1);
-  document.getElementById('mRange').textContent=(m+1)+'월 '+d+'일 ~ '+(nextFirst.getMonth()+1)+'월 '+nextFirst.getDate()+'일';
-  document.getElementById('mProgress').hidden=true;
+  renderDataStatus();
   document.getElementById('mDone').hidden=true;
   document.getElementById('mStart').disabled=false;
   document.getElementById('mLog').innerHTML='';
-  document.getElementById('mBar').style.width='0%';
   fetchModal.hidden=false;
 });
 
@@ -1089,83 +1113,33 @@ document.getElementById('mClose').addEventListener('click',function(){fetchModal
 fetchModal.addEventListener('click',function(e){if(e.target===fetchModal) fetchModal.hidden=true;});
 
 document.getElementById('mStart').addEventListener('click',function(){
-  this.disabled=true;
-  document.getElementById('mProgress').hidden=false;
-  var log=document.getElementById('mLog');
-  var bar=document.getElementById('mBar');
-  var mDone=document.getElementById('mDone');
-  var today=new Date();
-  var holiday=getKoreanHoliday(today);
-  var closedCount=pools.filter(function(p){return isTodayClosed(p).closed;}).length;
-
-  function addLog(text,cls){
-    var prev=log.querySelector('.loading');
-    if(prev){prev.classList.remove('loading');prev.classList.add('done');}
-    var li=document.createElement('li');
-    li.className=cls||'done';
-    li.textContent=text;
-    log.appendChild(li);
-    log.scrollTop=log.scrollHeight;
-  }
-  function setBar(pct){bar.style.width=pct+'%';}
-
-  // Phase sequence
-  var phases=[
-    {label:'공공 공휴일 API 조회 중...', delay:400, action:function(){
-      if(holiday) addLog('✔ 오늘('+todayStr()+')은 '+holiday+' — 공휴일 확인 완료');
-      else addLog('✔ 오늘은 공휴일이 아닙니다');
-      setBar(10);
-    }},
-    {label:'임시 휴관 공지 확인 중...', delay:500, action:function(){
-      addLog('✔ 각 시설 홈페이지 임시휴관 공지 수집 완료');
-      setBar(20);
-    }},
-  ];
-
-  // Phase 3: per-pool queries
-  var poolPhases=pools.map(function(p,i){
-    return {label:p.name+' 운영정보 조회 중...', delay:90+Math.random()*130, action:function(){
-      var st=isTodayClosed(p);
-      var note=st.closed?'(오늘 휴관: '+st.reason+')':'운영 중';
-      addLog('✔ '+p.name+' — '+note);
-      setBar(20+Math.round(((i+1)/pools.length)*65));
-    }};
+  var btn=this, log=document.getElementById('mLog'), done=document.getElementById('mDone');
+  btn.disabled=true;
+  done.hidden=true;
+  log.innerHTML='';
+  function addLog(text){var li=document.createElement('li');li.className='done';li.textContent=text;log.appendChild(li);}
+  loadData().then(function(data){
+    addLog('저장 파일 로드: '+DATA_URL+' ('+data.pools.length+'개)');
+    applyData(data);
+    renderDataStatus();
+    addLog('조회 조건 '+dataMeta.criteria.length+'개 적용 상태 확인');
+    var holiday=getKoreanHoliday(state.queryDate);
+    var closed=0, unknown=0;
+    pools.forEach(function(p){var st=isTodayClosed(p); if(st.closed) closed++; else if(st.unknown) unknown++;});
+    addLog((holiday?formatDateLabel(state.queryDate)+' '+holiday+' — ':'')+'휴관 '+closed+'개 · 운영여부 미확인 '+unknown+'개 판정');
+    done.textContent='완료 · 지도에 '+pools.length+'개 수영장 표시';
+    done.hidden=false;
+    btn.disabled=false;
+  }).catch(function(err){
+    addLog('불러오기 실패: '+err.message);
+    btn.disabled=false;
   });
-
-  phases=phases.concat(poolPhases);
-
-  phases.push({label:'가격표 업데이트 중...', delay:350, action:function(){
-    addLog('✔ 가격 정보 업데이트 완료 ('+pools.length+'개 시설)');
-    setBar(95);
-  }});
-  phases.push({label:'데이터 정리 중...', delay:200, action:function(){
-    setBar(100);
-    var summary='완료! '+pools.length+'개 수영장 정보 업데이트';
-    if(holiday) summary+=' · 오늘 '+closedCount+'개 시설 휴관 ('+holiday+')';
-    mDone.hidden=false;
-    mDone.textContent=summary;
-  }});
-
-  var idx=0;
-  function runPhase(){
-    if(idx>=phases.length) return;
-    var ph=phases[idx];
-    addLog(ph.label,'loading');
-    setTimeout(function(){
-      ph.action();
-      idx++;
-      if(idx<phases.length) setTimeout(runPhase, phases[idx].delay||150);
-    }, ph.delay||200);
-  }
-  setTimeout(runPhase, 300);
 });
 
 /* ── Init ── */
-initCitySelect();
-updateDistrictSelect();
 initTimeSelects();
-initDateSelect();
-initHolidayBanner();
-applyFilters();
+loadData().then(applyData).catch(function(err){
+  document.getElementById('poolList').innerHTML='<div class="no-results">수영장 데이터를 불러오지 못했습니다 ('+esc(err.message)+').<br>data/pools.json 을 확인하세요.</div>';
+});
 })();
 </script>
