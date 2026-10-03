@@ -205,6 +205,9 @@ html{height:100%}
 /* Map */
 .map-wrap{flex:1;position:relative;min-width:0}
 #map{position:absolute;inset:0;background:var(--map-bg);z-index:1}
+.city-region{cursor:pointer;transition:fill-opacity .2s}
+.city-label{font-size:12px;font-weight:700;color:var(--text);text-shadow:0 0 4px var(--surface),0 0 4px var(--surface),0 0 4px var(--surface);white-space:nowrap;pointer-events:none}
+.city-label.ref{font-size:10px;font-weight:500;color:var(--text-sub)}
 
 /* Popup content */
 .pp-name{font-size:15px;font-weight:700;color:var(--popup-text);margin-bottom:6px;line-height:1.3}
@@ -529,20 +532,75 @@ var jejuIsland = [
   [33.50,126.72],[33.52,126.64],[33.52,126.53]
 ];
 
-var landStyle = {color:'var(--border)',weight:1.5,fillColor:'var(--surface)',fillOpacity:1};
+var landStyle = {color:'var(--border)',weight:1.5,fillColor:'var(--surface)',fillOpacity:1,interactive:false};
 L.polygon(koreaMainland,landStyle).addTo(map);
 L.polygon(jejuIsland,landStyle).addTo(map);
 
-/* City labels */
-var cityLabels = [
-  [37.57,126.98,'서울'],[37.45,126.70,'인천'],[37.40,127.00,'수원'],
-  [36.35,127.38,'대전'],[35.87,128.60,'대구'],[35.18,129.07,'부산'],
-  [35.16,126.85,'광주'],[35.54,129.31,'울산'],[36.64,127.49,'청주'],
-  [35.82,127.15,'전주'],[36.99,127.09,'천안'],[37.88,127.73,'춘천'],
-  [33.50,126.53,'제주'],[35.10,128.68,'창원'],[37.75,128.88,'강릉']
+/* Clickable city/province regions */
+var cityRegions = [
+  {name:"서울특별시",coords:[[37.70,126.76],[37.70,127.18],[37.43,127.18],[37.43,126.76]],label:[37.57,126.98,'서울'],z:12},
+  {name:"인천광역시",coords:[[37.62,126.35],[37.62,126.76],[37.32,126.76],[37.32,126.35]],label:[37.47,126.56,'인천'],z:12},
+  {name:"부산광역시",coords:[[35.35,128.80],[35.35,129.35],[35.02,129.35],[35.02,128.80]],label:[35.18,129.07,'부산'],z:12},
+  {name:"대전광역시",coords:[[36.48,127.22],[36.48,127.55],[36.22,127.55],[36.22,127.22]],label:[36.35,127.38,'대전'],z:13},
+  {name:"대구광역시",coords:[[36.05,128.35],[36.05,128.85],[35.72,128.85],[35.72,128.35]],label:[35.87,128.60,'대구'],z:13},
+  {name:"광주광역시",coords:[[35.28,126.72],[35.28,127.00],[35.05,127.00],[35.05,126.72]],label:[35.16,126.85,'광주'],z:13},
+  {name:"울산광역시",coords:[[35.70,129.05],[35.70,129.45],[35.38,129.45],[35.38,129.05]],label:[35.54,129.25,'울산'],z:13},
+  {name:"세종특별자치시",coords:[[36.58,127.10],[36.58,127.42],[36.38,127.42],[36.38,127.10]],label:[36.48,127.26,'세종'],z:13},
+  {name:"제주특별자치도",coords:[[33.56,126.12],[33.56,126.98],[33.10,126.98],[33.10,126.12]],label:[33.36,126.55,'제주'],z:11}
 ];
-cityLabels.forEach(function(c){
-  L.marker([c[0],c[1]],{icon:L.divIcon({className:'',html:'<div style="color:var(--muted);font-size:11px;font-weight:500;text-shadow:0 0 3px var(--surface),0 0 3px var(--surface);white-space:nowrap;pointer-events:none">'+c[2]+'</div>',iconSize:[0,0],iconAnchor:[-4,6]})}).addTo(map);
+
+var regionLayers = {};
+var regionLabels = [];
+var hlStyle = {fillColor:'var(--primary)',fillOpacity:0.15,color:'var(--primary)',weight:2};
+var defStyle = {fillColor:'transparent',fillOpacity:0,color:'transparent',weight:0};
+
+function selectCityOnMap(cityName){
+  var sel=document.getElementById('citySelect');
+  sel.value=cityName;
+  state.city=cityName;
+  updateDistrictSelect();
+  var cc=cityCoords[cityName];
+  if(cc) map.setView([cc.lat,cc.lng],cc.z,{animate:true});
+  applyFilters();
+}
+
+cityRegions.forEach(function(r){
+  var poly=L.polygon(r.coords,Object.assign({},defStyle,{className:'city-region'})).addTo(map);
+  regionLayers[r.name]=poly;
+
+  poly.on('mouseover',function(){this.setStyle(hlStyle);});
+  poly.on('mouseout',function(){this.setStyle(defStyle);});
+  poly.on('click',function(){selectCityOnMap(r.name);});
+
+  var lbl=L.marker([r.label[0],r.label[1]],{icon:L.divIcon({className:'',html:'<div class="city-label">'+r.label[2]+'</div>',iconSize:[0,0],iconAnchor:[-4,6]}),interactive:false}).addTo(map);
+  regionLabels.push(lbl);
+});
+
+/* Non-clickable reference labels for non-metro cities */
+var refLabels = [
+  [37.40,127.00,'수원'],[36.64,127.49,'청주'],[35.82,127.15,'전주'],
+  [36.99,127.09,'천안'],[37.88,127.73,'춘천'],[35.10,128.68,'창원'],
+  [37.75,128.88,'강릉']
+];
+refLabels.forEach(function(c){
+  L.marker([c[0],c[1]],{icon:L.divIcon({className:'',html:'<div class="city-label ref">'+c[2]+'</div>',iconSize:[0,0],iconAnchor:[-4,6]}),interactive:false}).addTo(map);
+});
+
+/* Show/hide region overlays based on zoom */
+map.on('zoomend',function(){
+  var z=map.getZoom();
+  cityRegions.forEach(function(r){
+    var layer=regionLayers[r.name];
+    if(z>=10){
+      if(map.hasLayer(layer)) map.removeLayer(layer);
+    } else {
+      if(!map.hasLayer(layer)) layer.addTo(map);
+    }
+  });
+  regionLabels.forEach(function(m){
+    if(z>=10){if(map.hasLayer(m)) map.removeLayer(m);}
+    else{if(!map.hasLayer(m)) m.addTo(map);}
+  });
 });
 
 var markers = {};
