@@ -499,14 +499,17 @@ var koreaGeoJSON = {"type":"FeatureCollection","features":[{"type":"Feature","pr
 var regionLayers = {};
 var regionLabels = [];
 
-var defStyle = {color:'var(--border)',weight:1,fillColor:'var(--surface)',fillOpacity:1};
-var hlStyle   = {color:'var(--primary)',weight:2,fillColor:'var(--primary)',fillOpacity:0.18};
-var selStyle  = {color:'var(--primary)',weight:2,fillColor:'var(--primary)',fillOpacity:0.28};
+function cssVar(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+function defStyle(){return {color:cssVar('--border'),weight:1,fillColor:cssVar('--surface'),fillOpacity:1};}
+function hlStyle() {return {color:cssVar('--primary'),weight:2,fillColor:cssVar('--primary'),fillOpacity:0.18};}
+function selStyle(){return {color:cssVar('--primary'),weight:2,fillColor:cssVar('--primary'),fillOpacity:0.28};}
 
 function selectCityOnMap(cityName){
   // Reset all region styles
   Object.keys(regionLayers).forEach(function(k){
-    regionLayers[k].setStyle(k===cityName ? selStyle : defStyle);
+    regionLayers[k].setStyle(k===cityName ? selStyle() : defStyle());
   });
   // Update filter sidebar
   var hasPools = !!regions[cityName];
@@ -528,18 +531,18 @@ function selectCityOnMap(cityName){
 }
 
 var geoLayer = L.geoJSON(koreaGeoJSON, {
-  style: defStyle,
+  style: defStyle(),
   onEachFeature: function(feature, layer){
     var name = feature.properties.name;
     regionLayers[name] = layer;
     layer.options.className = 'city-region';
 
     layer.on('mouseover', function(){
-      if(state.city !== name) this.setStyle(hlStyle);
+      if(state.city !== name) this.setStyle(hlStyle());
       this.bringToFront();
     });
     layer.on('mouseout', function(){
-      if(state.city !== name) this.setStyle(defStyle);
+      if(state.city !== name) this.setStyle(defStyle());
     });
     layer.on('click', function(){ selectCityOnMap(name); });
 
@@ -754,7 +757,7 @@ document.getElementById('citySelect').addEventListener('change',function(){
   updateDistrictSelect();
   // Sync map region highlight
   Object.keys(regionLayers).forEach(function(k){
-    regionLayers[k].setStyle(k===state.city ? selStyle : defStyle);
+    regionLayers[k].setStyle(k===state.city ? selStyle() : defStyle());
   });
   if(state.city!=='전체'){
     var layer=regionLayers[state.city];
