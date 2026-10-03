@@ -166,14 +166,25 @@ html{height:100%}
 .time-row .sel{width:auto;min-width:80px}
 .time-sep{font-weight:700;color:var(--text-sub);font-size:16px}
 
-.fetch-btn{
+.search-btn{
   width:100%;padding:12px;border:none;border-radius:var(--r);
-  background:linear-gradient(135deg,var(--accent),var(--primary));
+  background:var(--primary);
   color:#fff;font:700 14px/1 var(--f);cursor:pointer;
-  transition:opacity .15s;letter-spacing:.02em;
+  transition:all .15s;letter-spacing:.02em;
 }
-.fetch-btn:hover{opacity:.88}
-.fetch-btn:active{opacity:.75}
+.search-btn:hover{background:var(--primary-hover)}
+.search-btn:active{opacity:.75}
+
+.filter-header{display:flex;align-items:center;justify-content:space-between}
+.filter-header h2{margin:0}
+.refresh-btn{
+  width:28px;height:28px;border:1px solid var(--border);border-radius:50%;
+  background:var(--input-bg);color:var(--text-sub);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;padding:0;
+}
+.refresh-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.refresh-btn svg{width:14px;height:14px;fill:currentColor}
 
 .result-bar{
   display:flex;align-items:center;justify-content:space-between;
@@ -292,7 +303,10 @@ html{height:100%}
       <div class="sidebar-inner">
 
         <section class="filter-section">
-          <h2>지역</h2>
+          <div class="filter-header">
+            <h2>지역</h2>
+            <button class="refresh-btn" id="refreshBtn" title="최신정보 가져오기"><svg viewBox="0 0 16 16"><path d="M13.65 2.35A7.96 7.96 0 008 0a8 8 0 108 8h-2a6 6 0 11-1.76-4.24L10 6h6V0l-2.35 2.35z"/></svg></button>
+          </div>
           <select class="sel" id="citySelect"><option value="전체">전체 (시/도)</option></select>
           <select class="sel" id="districtSelect"><option value="전체">전체 (구/군)</option></select>
         </section>
@@ -334,7 +348,7 @@ html{height:100%}
           </div>
         </section>
 
-        <button class="fetch-btn" id="fetchBtn">최신정보 가져오기</button>
+        <button class="search-btn" id="searchBtn">검색</button>
 
         <div class="result-bar">
           <span class="result-count" id="resultCount">검색 결과: <strong>0</strong>개</span>
@@ -666,7 +680,6 @@ document.getElementById('citySelect').addEventListener('change',function(){
   } else {
     map.setView([37.5665,126.978],8,{animate:true});
   }
-  applyFilters();
 });
 
 document.getElementById('districtSelect').addEventListener('change',function(){
@@ -675,7 +688,6 @@ document.getElementById('districtSelect').addEventListener('change',function(){
     var pool=pools.find(function(p){return p.city===state.city && p.district===state.district;});
     if(pool) map.setView([pool.lat,pool.lng],15,{animate:true});
   }
-  applyFilters();
 });
 
 document.getElementById('dayFilter').addEventListener('click',function(e){
@@ -689,26 +701,25 @@ document.getElementById('dayFilter').addEventListener('click',function(e){
     state.specificDays=[];
     document.querySelectorAll('#dayChecks input').forEach(function(cb){cb.checked=false;});
   }
-  applyFilters();
 });
 
 document.getElementById('dayChecks').addEventListener('change',function(){
   state.specificDays=[];
   this.querySelectorAll('input:checked').forEach(function(cb){state.specificDays.push(cb.value);});
-  applyFilters();
 });
 
-document.getElementById('chkNonMember').addEventListener('change',function(){state.showNonMember=this.checked;applyFilters();});
-document.getElementById('chkMember').addEventListener('change',function(){state.showMember=this.checked;applyFilters();});
+document.getElementById('chkNonMember').addEventListener('change',function(){state.showNonMember=this.checked;});
+document.getElementById('chkMember').addEventListener('change',function(){state.showMember=this.checked;});
 
 document.getElementById('timeStart').addEventListener('change',function(){
   state.timeStart=this.value?parseInt(this.value):null;
-  applyFilters();
 });
 document.getElementById('timeEnd').addEventListener('change',function(){
   state.timeEnd=this.value?parseInt(this.value):null;
-  applyFilters();
 });
+
+/* Search button */
+document.getElementById('searchBtn').addEventListener('click',function(){applyFilters();});
 
 /* Mobile filter toggle */
 document.getElementById('filterToggle').addEventListener('click',function(){
@@ -718,7 +729,7 @@ document.getElementById('filterToggle').addEventListener('click',function(){
 
 /* ── Fetch modal ── */
 var fetchModal=document.getElementById('fetchModal');
-document.getElementById('fetchBtn').addEventListener('click',function(){
+document.getElementById('refreshBtn').addEventListener('click',function(){
   var now=new Date();
   var y=now.getFullYear(),m=now.getMonth(),d=now.getDate();
   document.getElementById('mDate').textContent=y+'년 '+(m+1)+'월 '+d+'일';
