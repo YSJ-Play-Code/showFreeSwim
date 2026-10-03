@@ -1341,5 +1341,538 @@
   "holidayClosed": true,
   "notices": "10월 정상운영",
   "verified": false
+ },
+ {
+  "id": 26,
+  "name": "강릉국민체육센터",
+  "city": "강원도",
+  "district": "강릉시",
+  "address": "강원도 강릉시 종합운동장길 88",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 4000},
+  "sessions": [{"s": 9, "e": 18, "d": ["월","화","수","목","금","토"]}],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 27,
+  "name": "속초국민체육센터(수영장)",
+  "city": "강원도",
+  "district": "속초시",
+  "address": "강원도 속초시 중앙로 183",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 3500},
+  "sessions": [{"s": 6, "e": 22, "d": ["화","수","목","금","토","일"]}],
+  "regularOff": "월",
+  "holidayClosed": false,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 28,
+  "name": "광교웰빙국민체육센터",
+  "city": "경기도",
+  "district": "수원시",
+  "address": "경기도 수원시 영통구 광교로 107",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 4000},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["월","화","수","목","금"]},
+   {"s": 6, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": null,
+  "holidayClosed": true,
+  "notices": "2·4주 일요일 휴관",
+  "verified": false
+ },
+ {
+  "id": 29,
+  "name": "군포시노동종합복지관",
+  "city": "경기도",
+  "district": "군포시",
+  "address": "경기도 군포시 번영로 481",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 4000},
+  "sessions": [{"s": 6, "e": 22, "d": ["월","화","수","목","금"]}],
+  "regularOff": null,
+  "holidayClosed": true,
+  "notices": "주말 미운영",
+  "verified": false
+ },
+ {
+  "id": 30,
+  "name": "서호노인복지관",
+  "city": "경기도",
+  "district": "수원시",
+  "address": "경기도 수원시 권선구 구운로 4번길 34",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 2700, "nonMember": 3500},
+  "sessions": [{"s": 6, "e": 21, "d": ["월","화","수","목","금"]}],
+  "regularOff": null,
+  "holidayClosed": true,
+  "notices": "주말/공휴일 휴관",
+  "verified": false
+ },
+ {
+  "id": 31,
+  "name": "양평군체육센터",
+  "city": "경기도",
+  "district": "양평군",
+  "address": "경기도 양평군 양평읍 종합운동장로 5",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 3000},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["월","화","수","목","금"]},
+   {"s": 6, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 32,
+  "name": "YMCA 스포츠센터 수영장",
+  "city": "경기도",
+  "district": "성남시",
+  "address": "경기도 성남시 분당구 정자동",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 6000, "nonMember": 8000},
+  "sessions": [
+   {"s": 8, "e": 9, "d": ["월","화","수","목","금"]},
+   {"s": 12, "e": 13, "d": ["월","화","수","목","금"]},
+   {"s": 19, "e": 20, "d": ["월","화","수","목","금"]},
+   {"s": 8, "e": 9, "d": ["토"]},
+   {"s": 13, "e": 17, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 33,
+  "name": "용인시민체육센터",
+  "city": "경기도",
+  "district": "용인시",
+  "address": "경기도 용인시 처인구 금령로 10",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 4000},
+  "sessions": [
+   {"s": 8, "e": 9, "d": ["월","화","수","목","금"]},
+   {"s": 12, "e": 13, "d": ["월","화","수","목","금"]},
+   {"s": 18, "e": 19, "d": ["월","화","수","목","금"]},
+   {"s": 21, "e": 22, "d": ["월","화","수","목","금"]},
+   {"s": 7, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 34,
+  "name": "화성남부국민체육센터",
+  "city": "경기도",
+  "district": "화성시",
+  "address": "경기도 화성시 남양읍 무하로 37",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 3000},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["월","화","수","목","금"]},
+   {"s": 6, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": null,
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 35,
+  "name": "민락국민체육센터",
+  "city": "경기도",
+  "district": "의정부시",
+  "address": "경기도 의정부시 민락동",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 4000, "nonMember": 5000},
+  "sessions": [
+   {"s": 6, "e": 22, "d": ["월","화","수","목","금"]},
+   {"s": 9, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": false,
+  "notices": "공휴일 09~18시 운영",
+  "verified": false
+ },
+ {
+  "id": 36,
+  "name": "고성군 문화체육센타",
+  "city": "경상남도",
+  "district": "고성군",
+  "address": "경남 고성군 고성읍 송학고분로 193",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 4000},
+  "sessions": [
+   {"s": 9, "e": 21, "d": ["화","수","목","금"]},
+   {"s": 9, "e": 18, "d": ["토","일"]}
+  ],
+  "regularOff": "월",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 37,
+  "name": "통영국민체육센터",
+  "city": "경상남도",
+  "district": "통영시",
+  "address": "경남 통영시 무전대로 228",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 4000},
+  "sessions": [{"s": 9, "e": 18, "d": ["월","화","수","목","금","토"]}],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 38,
+  "name": "영덕문화체육센터수영장",
+  "city": "경상북도",
+  "district": "영덕군",
+  "address": "경북 영덕군 영덕읍 강변길 324",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 4000, "nonMember": 5000},
+  "sessions": [{"s": 6, "e": 20, "d": ["월","화","수","목","금","토"]}],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 39,
+  "name": "대덕국민체육센터수영장",
+  "city": "대전광역시",
+  "district": "대덕구",
+  "address": "대전 대덕구 중리로 201",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3500, "nonMember": 4300},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["월","화","수","목","금"]},
+   {"s": 6, "e": 18, "d": ["토","일"]}
+  ],
+  "regularOff": null,
+  "holidayClosed": false,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 40,
+  "name": "구즉국민체육센터",
+  "city": "대전광역시",
+  "district": "유성구",
+  "address": "대전 유성구 구즉동",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3500, "nonMember": 4300},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["월","화","수","목","금"]},
+   {"s": 6, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": null,
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 41,
+  "name": "유성구종합사회복지관 수영장",
+  "city": "대전광역시",
+  "district": "유성구",
+  "address": "대전 유성구 유성대로 825",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 4000},
+  "sessions": [
+   {"s": 8, "e": 9, "d": ["월","화","목","금"]},
+   {"s": 13, "e": 15, "d": ["월","화","목","금"]},
+   {"s": 16, "e": 18, "d": ["월","화","목","금"]},
+   {"s": 6, "e": 17, "d": ["수"]},
+   {"s": 18, "e": 21, "d": ["수"]},
+   {"s": 6, "e": 12, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 42,
+  "name": "강서구민올림픽체육센터",
+  "city": "서울특별시",
+  "district": "강서구",
+  "address": "서울 강서구 화곡로 144",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3500, "nonMember": 5000},
+  "sessions": [
+   {"s": 8, "e": 18, "d": ["월","화","수","목","금"]},
+   {"s": 7, "e": 14, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "주말 7,000원",
+  "verified": false
+ },
+ {
+  "id": 43,
+  "name": "공항동문화체육센터",
+  "city": "서울특별시",
+  "district": "강서구",
+  "address": "서울 강서구 송정로 45",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3500, "nonMember": 5500},
+  "sessions": [
+   {"s": 8, "e": 9, "d": ["월","화","수","목","금"]},
+   {"s": 15, "e": 16, "d": ["월","화","수","목","금"]},
+   {"s": 18, "e": 19, "d": ["월","화","수","목","금"]},
+   {"s": 21, "e": 22, "d": ["월","화","수","목","금"]},
+   {"s": 9, "e": 16, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 44,
+  "name": "언남문화체육센터",
+  "city": "서울특별시",
+  "district": "서초구",
+  "address": "서울 서초구 언남길 19",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 5000, "nonMember": 6000},
+  "sessions": [
+   {"s": 12, "e": 14, "d": ["월","화","수","목","금"]},
+   {"s": 18, "e": 19, "d": ["월","화","수","목","금"]},
+   {"s": 10, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 45,
+  "name": "동구국민체육센터 수영장",
+  "city": "울산광역시",
+  "district": "동구",
+  "address": "울산 동구 봉수로 153",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 2000, "nonMember": 2500},
+  "sessions": [
+   {"s": 6, "e": 22, "d": ["화","수","목","금"]},
+   {"s": 6, "e": 19, "d": ["토","일"]}
+  ],
+  "regularOff": "월",
+  "holidayClosed": false,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 46,
+  "name": "강화국민체육센터",
+  "city": "인천광역시",
+  "district": "강화군",
+  "address": "인천 강화군 강화읍 갑룡로 45",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 5000, "nonMember": 6000},
+  "sessions": [
+   {"s": 8, "e": 9, "d": ["월","화","수","목","금"]},
+   {"s": 12, "e": 13, "d": ["월","화","수","목","금"]},
+   {"s": 18, "e": 19, "d": ["월","화","수","목","금"]},
+   {"s": 9, "e": 17, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 47,
+  "name": "나주 빛가람 복합문화체육센터 수영장",
+  "city": "전남광주통합특별시",
+  "district": "나주시",
+  "address": "전남 나주시 빛가람로 815",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 4000},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["월","화","수","목","금"]},
+   {"s": 9, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "요금 정책 변동 가능",
+  "verified": false
+ },
+ {
+  "id": 48,
+  "name": "망마체육센터수영장",
+  "city": "전남광주통합특별시",
+  "district": "여수시",
+  "address": "전남 여수시 여천체육공원길 49",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 4000, "nonMember": 5000},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["월","화","수","목","금"]},
+   {"s": 9, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 49,
+  "name": "우슬국민체육센터",
+  "city": "전남광주통합특별시",
+  "district": "해남군",
+  "address": "전남 해남군 해남읍 해남로 72",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 3000},
+  "sessions": [{"s": 6, "e": 21, "d": ["월","화","수","목","금","토"]}],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 50,
+  "name": "진도국민체육센터(진도실내수영장)",
+  "city": "전남광주통합특별시",
+  "district": "진도군",
+  "address": "전남 진도군 진도읍",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 4000},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["월","화","수","목","금"]},
+   {"s": 9, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 51,
+  "name": "부안국민체육센터(실내수영장)",
+  "city": "전라북도",
+  "district": "부안군",
+  "address": "전북 부안군 부안읍 서외로 94",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 3000},
+  "sessions": [{"s": 5, "e": 21, "d": ["월","화","수","목","금","토"]}],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 52,
+  "name": "전라북도 국민체육센터",
+  "city": "전라북도",
+  "district": "전주시",
+  "address": "전북 전주시 덕진구 한배미6길 7",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3500, "nonMember": 4500},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["월","화","수","목","금"]},
+   {"s": 9, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
+ },
+ {
+  "id": 53,
+  "name": "논산시공공시설사업소(논산국민체육센터)",
+  "city": "충청남도",
+  "district": "논산시",
+  "address": "충남 논산시 취암동",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 4000},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["화","수","목","금"]},
+   {"s": 9, "e": 18, "d": ["토","일"]}
+  ],
+  "regularOff": "월",
+  "holidayClosed": false,
+  "notices": "토일공휴일 09~18시 운영",
+  "verified": false
+ },
+ {
+  "id": 54,
+  "name": "천안시시설관리공단 한들문화센터 수영장",
+  "city": "충청남도",
+  "district": "천안시",
+  "address": "충남 천안시 서북구 불당26로 68",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 2500, "nonMember": 3500},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["월","화","수","목","금"]},
+   {"s": 6, "e": 17, "d": ["토"]},
+   {"s": 9, "e": 17, "d": ["일"]}
+  ],
+  "regularOff": null,
+  "holidayClosed": false,
+  "notices": "공휴일 09~17시 운영",
+  "verified": false
+ },
+ {
+  "id": 55,
+  "name": "맹동혁신 국민체육센터(수영장)",
+  "city": "충청북도",
+  "district": "음성군",
+  "address": "충북 음성군 맹동면 혁신로 114",
+  "lat": null,
+  "lng": null,
+  "prices": {"member": 3000, "nonMember": 4000},
+  "sessions": [
+   {"s": 6, "e": 21, "d": ["월","화","수","목","금"]},
+   {"s": 6, "e": 18, "d": ["토"]}
+  ],
+  "regularOff": "일",
+  "holidayClosed": true,
+  "notices": "",
+  "verified": false
  }
 ]
