@@ -355,6 +355,11 @@ html{height:100%}
           </div>
         </section>
 
+        <section class="filter-section">
+          <h2>조회 일자</h2>
+          <select class="sel" id="dateSelect"></select>
+        </section>
+
         <button class="search-btn" id="searchBtn">검색</button>
 
         <div class="result-bar">
@@ -520,7 +525,8 @@ var state = {
   showNonMember: true,
   showMember: false,
   timeStart: null,
-  timeEnd: null
+  timeEnd: null,
+  queryDate: new Date()
 };
 
 /* ── Map ── */
@@ -750,30 +756,80 @@ function getRegularOffDayName(pool){
   return pool.regularOff || null;
 }
 
-function isTodayRegularOff(pool){
+function isRegularOff(pool, date){
   if(!pool.regularOff) return false;
-  var today=new Date();
-  var dow=KOR_DAYS[today.getDay()];
-  return pool.regularOff===dow;
+  return pool.regularOff===KOR_DAYS[date.getDay()];
 }
 
 function isTodayClosed(pool){
-  var today=new Date();
-  var holiday=getKoreanHoliday(today);
+  var d=state.queryDate;
+  var holiday=getKoreanHoliday(d);
   if(holiday && pool.holidayClosed) return {closed:true, reason:'공휴일 ('+holiday+')'};
-  if(isTodayRegularOff(pool)) return {closed:true, reason:'정기 휴관 ('+pool.regularOff+'요일)'};
+  if(isRegularOff(pool,d)) return {closed:true, reason:'정기 휴관 ('+pool.regularOff+'요일)'};
   return {closed:false, reason:null};
 }
 
-function initHolidayBanner(){
-  var today=new Date();
-  var holiday=getKoreanHoliday(today);
+function updateHolidayBanner(){
+  var d=state.queryDate;
+  var holiday=getKoreanHoliday(d);
   var banner=document.getElementById('holidayBanner');
   if(holiday){
-    var closedCount=pools.filter(function(p){return p.holidayClosed;}).length;
-    banner.innerHTML='⚠ 오늘은 <strong>'+holiday+'</strong>입니다 · '+closedCount+'개 수영장 휴관';
+    var closedCount=pools.filter(function(p){return isTodayClosed(p).closed;}).length;
+    var isToday=(d.toDateString()===new Date().toDateString());
+    var prefix=isToday?'오늘은':'선택일('+formatDateLabel(d)+')은';
+    banner.innerHTML='⚠ '+prefix+' <strong>'+holiday+'</strong>입니다 · '+closedCount+'개 수영장 휴관';
     banner.classList.add('show');
+  } else {
+    banner.innerHTML='';
+    banner.classList.remove('show');
   }
+}
+
+function initHolidayBanner(){updateHolidayBanner();}
+
+function formatDateLabel(d){
+  return (d.getMonth()+1)+'/'+d.getDate();
+}
+
+/* ── Date select ── */
+function initDateSelect(){
+  var sel=document.getElementById('dateSelect');
+  var today=new Date();
+  today.setHours(0,0,0,0);
+  var y=today.getFullYear(), m=today.getMonth();
+
+  // 이번달 말일
+  var lastDayCur=new Date(y,m+1,0).getDate();
+  // 다음달 데이터 존재 여부 확인 (notices에 다음달 날짜 언급 있으면 확장)
+  var nextM=m+1, nextY=y;
+  if(nextM>11){nextM=0;nextY++;}
+  var hasNextMonth=pools.some(function(p){
+    return p.notices && p.notices.indexOf((nextM+1)+'월')>=0;
+  });
+  var lastDate=new Date(y,m+1,0); // 이번달 말
+  if(hasNextMonth) lastDate=new Date(nextY,nextM+1,0); // 다음달 말
+
+  var cur=new Date(today);
+  while(cur<=lastDate){
+    var o=document.createElement('option');
+    var val=cur.getFullYear()+'-'+pad(cur.getMonth()+1)+'-'+pad(cur.getDate());
+    o.value=val;
+    var isToday=(cur.toDateString()===today.toDateString());
+    var holiday=getKoreanHoliday(cur);
+    var dow=KOR_DAYS[cur.getDay()];
+    var label=(cur.getMonth()+1)+'월 '+cur.getDate()+'일 ('+dow+')';
+    if(isToday) label='오늘 — '+label;
+    if(holiday) label+=' ['+holiday+']';
+    o.textContent=label;
+    if(isToday) o.selected=true;
+    sel.appendChild(o);
+    cur=new Date(cur.getFullYear(),cur.getMonth(),cur.getDate()+1);
+  }
+}
+
+function parseDateVal(val){
+  var p=val.split('-');
+  return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
 }
 
 /* ── Filter logic ── */
@@ -822,7 +878,12 @@ function applyFilters(){
   var matched=pools.filter(matchesFilter);
   renderMarkers(matched);
   renderPoolList(matched);
-  document.getElementById('resultCount').innerHTML='검색 결과: <strong>'+matched.length+'</strong>개';
+  var d=state.queryDate, isToday=(d.toDateString()===new Date().toDateString());
+  var dateLabel=isToday?'오늘':formatDateLabel(d);
+  var openCount=matched.filter(function(p){return !isTodayClosed(p).closed;}).length;
+  var closedCount=matched.length-openCount;
+  var countHtml='<strong>'+matched.length+'</strong>개 ('+dateLabel+': 운영 '+openCount+'·휴관 '+closedCount+')';
+  document.getElementById('resultCount').innerHTML='검색 결과: '+countHtml;
 }
 
 function renderMarkers(list){
@@ -858,7 +919,13 @@ function renderPoolList(list){
     el.innerHTML='<div class="no-results">검색 조건에 맞는 수영장이 없습니다.<br>필터를 조정해 보세요.</div>';
     return;
   }
-  el.innerHTML=list.map(function(pool){
+  // 이용 가능(열린) 수영장 먼저, 휴관 수영장 뒤로
+  var sorted=list.slice().sort(function(a,b){
+    var ac=isTodayClosed(a).closed?1:0;
+    var bc=isTodayClosed(b).closed?1:0;
+    return ac-bc;
+  });
+  el.innerHTML=sorted.map(function(pool){
     var priceText='';
     if(state.showNonMember) priceText+='비회원 '+formatPrice(pool.prices.nonMember);
     if(state.showMember){if(priceText) priceText+=' / '; priceText+='회원 '+formatPrice(pool.prices.member);}
@@ -975,6 +1042,13 @@ document.getElementById('timeEnd').addEventListener('change',function(){
   state.timeEnd=this.value?parseInt(this.value):null;
 });
 
+/* Date select */
+document.getElementById('dateSelect').addEventListener('change',function(){
+  state.queryDate=parseDateVal(this.value);
+  updateHolidayBanner();
+  applyFilters();
+});
+
 /* Search button */
 document.getElementById('searchBtn').addEventListener('click',function(){applyFilters();});
 
@@ -1079,6 +1153,7 @@ document.getElementById('mStart').addEventListener('click',function(){
 initCitySelect();
 updateDistrictSelect();
 initTimeSelects();
+initDateSelect();
 initHolidayBanner();
 applyFilters();
 })();
