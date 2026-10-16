@@ -1,0 +1,7 @@
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=5.0
+pdfplumber>=0.11
+pypdf>=4.0
+# 선택: JS로 그려지는 운용사 사이트용 (--render)
+# playwright>=1.45
